@@ -1,5 +1,4 @@
 <?php
-// app/Models/Entrada.php
 
 namespace App\Models;
 
@@ -14,45 +13,71 @@ class Entrada extends Model
 
     protected $fillable = [
         'codigo',
+        'sucursal_id',
         'proveedor_id',
         'usuario_id',
         'fecha_entrada',
         'estado',
         'observaciones',
-        'total'
+        'total',
     ];
 
     protected $casts = [
         'fecha_entrada' => 'date',
-        'total' => 'decimal:2'
+        'total' => 'decimal:2',
     ];
 
-    // Relación con Proveedor - usar el nombre correcto de la tabla
+    /**
+     * Relación con sucursal
+     */
+    public function sucursal()
+    {
+        return $this->belongsTo(Sucursal::class, 'sucursal_id');
+    }
+
+    /**
+     * Relación con proveedor
+     */
     public function proveedor()
     {
         return $this->belongsTo(Proveedor::class, 'proveedor_id');
     }
 
+    /**
+     * Relación con usuario
+     */
     public function usuario()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'usuario_id');
     }
 
+    /**
+     * Relación con detalles
+     */
     public function detalles()
     {
-        return $this->hasMany(DetalleEntrada::class);
+        return $this->hasMany(DetalleEntrada::class, 'entrada_id');
     }
 
+    /**
+     * Badge del estado
+     */
     public function getEstadoBadgeAttribute()
     {
         $badges = [
             'pendiente' => '<span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">Pendiente</span>',
+
             'completada' => '<span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Completada</span>',
-            'cancelada' => '<span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Cancelada</span>'
+
+            'cancelada' => '<span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Cancelada</span>',
         ];
+
         return $badges[$this->estado] ?? $this->estado;
     }
 
+    /**
+     * Total formateado
+     */
     public function getTotalFormateadoAttribute()
     {
         return 'RD$ ' . number_format($this->total, 2);

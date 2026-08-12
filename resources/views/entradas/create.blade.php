@@ -9,30 +9,102 @@
         </div>
         <form method="POST" action="{{ route('entradas.store') }}" class="p-6" id="formEntrada">
             @csrf
-            <!-- Datos de la entrada -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Código *</label>
-                    <input type="text" name="codigo" value="{{ old('codigo', $codigo) }}" readonly
-                           class="w-full rounded-lg border-gray-300 bg-gray-50">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Fecha *</label>
-                    <input type="date" name="fecha_entrada" value="{{ old('fecha_entrada', date('Y-m-d')) }}"
-                           class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Proveedor</label>
-                    <select name="proveedor_id" class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200">
-                        <option value="">Sin proveedor</option>
-                        @foreach($proveedores as $proveedor)
-                        <option value="{{ $proveedor->id }}" {{ old('proveedor_id') == $proveedor->id ? 'selected' : '' }}>
-                            {{ $proveedor->nombre }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
+           <!-- Datos de la entrada -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+
+    <!-- Código -->
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+            Código *
+        </label>
+
+        <input
+            type="text"
+            name="codigo"
+            value="{{ old('codigo', $codigo) }}"
+            readonly
+            class="w-full rounded-lg border-gray-300 bg-gray-50"
+        >
+    </div>
+
+    <!-- Fecha -->
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+            Fecha *
+        </label>
+
+        <input
+            type="date"
+            name="fecha_entrada"
+            value="{{ old('fecha_entrada', date('Y-m-d')) }}"
+            class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200"
+            required
+        >
+    </div>
+
+    <!-- Sucursal -->
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+            Sucursal *
+        </label>
+
+        <select
+            name="sucursal_id"
+            class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200"
+            required
+        >
+            <option value="">Seleccione una sucursal</option>
+
+            @foreach($sucursales as $sucursal)
+                <option
+                    value="{{ $sucursal->id }}"
+                    {{ old('sucursal_id') == $sucursal->id ? 'selected' : '' }}
+                >
+                    {{ $sucursal->nombre }}
+                    @if($sucursal->codigo)
+                        ({{ $sucursal->codigo }})
+                    @endif
+                </option>
+            @endforeach
+        </select>
+
+        @error('sucursal_id')
+            <p class="mt-1 text-sm text-red-600">
+                {{ $message }}
+            </p>
+        @enderror
+    </div>
+
+    <!-- Proveedor -->
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+            Proveedor
+        </label>
+
+        <select
+            name="proveedor_id"
+            class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200"
+        >
+            <option value="">Sin proveedor</option>
+
+            @foreach($proveedores as $proveedor)
+                <option
+                    value="{{ $proveedor->id }}"
+                    {{ old('proveedor_id') == $proveedor->id ? 'selected' : '' }}
+                >
+                    {{ $proveedor->nombre }}
+                </option>
+            @endforeach
+        </select>
+
+        @error('proveedor_id')
+            <p class="mt-1 text-sm text-red-600">
+                {{ $message }}
+            </p>
+        @enderror
+    </div>
+
+</div>
             <!-- Observaciones -->
             <div class="mb-6">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Observaciones</label>
