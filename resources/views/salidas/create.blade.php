@@ -22,7 +22,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Fecha *</label>
-                    <input type="date" name="fecha_salida" value="{{ old('fecha_salida', date('Y-m-d')) }}" 
+                    <input type="date" name="fecha_salida" value="{{ old('fecha_salida', date('Y-m-d')) }}"
                            class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200" required>
                 </div>
                 <div>
@@ -53,7 +53,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Destino</label>
-                    <input type="text" name="destino" value="{{ old('destino') }}" 
+                    <input type="text" name="destino" value="{{ old('destino') }}"
                            placeholder="Ej: Cliente, Departamento, Sucursal..."
                            class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200">
                 </div>
@@ -111,39 +111,90 @@
     </div>
 </div>
 
-@push('scripts')
 <script>
-const articulos = @json($articulos);
+    window.articulos = @json($articulos);
+</script>
+<script>
 let filaCount = 0;
+const articulos = window.articulos || [];
 
 function agregarFila() {
     const tbody = document.getElementById('detallesBody');
+    if (!tbody) {
+        console.error('No se encontró el elemento detallesBody');
+        return;
+    }
+
+    if (articulos.length === 0) {
+        alert('No hay artículos disponibles. Por favor, crea artículos primero en el módulo de Inventario.');
+        return;
+    }
+
     const fila = document.createElement('tr');
     fila.className = 'fila-detalle';
     fila.id = `fila-${filaCount}`;
-    
+
+    let opciones = '<option value="">Seleccione un artículo</option>';
+    articulos.forEach(function(a) {
+        const stock = parseFloat(a.stock_actual) || 0;
+        const precio = parseFloat(a.precio_unitario) || 0; // precio de venta del artículo
+        opciones += `<option value="${a.id}" data-stock="${stock}" data-precio="${precio}" data-nombre="${a.nombre}">`;
+        opciones += `${a.nombre} (${a.codigo_sku}) - Stock: ${stock} - Precio: RD$ ${precio.toFixed(2)}`;
+        opciones += `</option>`;
+    });
+
     fila.innerHTML = `
         <td class="px-4 py-2">
-            <select name="articulos[${filaCount}][id]" class="w-full rounded-lg border-gray-300 text-sm" onchange="calcularSubtotal(this)" required>
-                <option value="">Seleccione</option>
-                ${articulos.map(a => `<option value="${a.id}" data-stock="${a.stock_actual}">${a.nombre} (${a.codigo_sku}) - Stock: ${a.stock_actual}</option>`).join('')}
+            <select name="articulos[${filaCount}][id]" class="w-full rounded-lg border-gray-300 text-sm select-articulo" required>
+                ${opciones}
             </select>
         </td>
         <td class="px-4 py-2">
-            <input type="number" name="articulos[${filaCount}][cantidad]" min="1" class="w-20 rounded-lg border-gray-300 text-sm" onchange="calcularSubtotal(this)" required>
+            <input type="number" name="articulos[${filaCount}][cantidad]" min="1" value="1"
+                   class="w-20 rounded-lg border-gray-300 text-sm input-cantidad" required>
         </td>
         <td class="px-4 py-2">
-            <input type="number" step="0.01" name="articulos[${filaCount}][precio]" min="0" class="w-28 rounded-lg border-gray-300 text-sm" onchange="calcularSubtotal(this)" required>
+            <input type="number" step="0.01" name="articulos[${filaCount}][precio]" min="0"
+                   class="w-28 rounded-lg border-gray-300 text-sm input-precio" required>
         </td>
-        <td class="px-4 py-2 subtotal-cell">RD$ 0.00</td>
-        <td class="px-4 py-2">
+        <td class="px-4 py-2 subtotal-cell text-center font-medium">RD$ 0.00</td>
+        <td class="px-4 py-2 text-center">
             <button type="button" onclick="eliminarFila(${filaCount})" class="text-red-600 hover:text-red-800">
                 <i class="fas fa-trash"></i>
             </button>
         </td>
     `;
-    
+
     tbody.appendChild(fila);
+
+    const selectArticulo = fila.querySelector('.select-articulo');
+    const precioInput = fila.querySelector('.input-precio');
+    const cantidadInput = fila.querySelector('.input-cantidad');
+
+    selectArticulo.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        if (selectedOption && selectedOption.value) {
+            const precio = parseFloat(selectedOption.dataset.precio) || 0;
+            const stock = parseFloat(selectedOption.dataset.stock) || 0;
+            precioInput.value = precio.toFixed(2);
+            cantidadInput.max = stock; // evita superar el stock disponible en el navegador
+        } else {
+            precioInput.value = '0.00';
+            cantidadInput.removeAttribute('max');
+        }
+        calcularSubtotal(this);
+    });
+
+    cantidadInput.addEventListener('input', function() {
+        const max = parseFloat(this.max);
+        if (!isNaN(max) && parseFloat(this.value) > max) {
+            alert(`Stock insuficiente. Disponible: ${max}`);
+            this.value = max;
+        }
+        calcularSubtotal(this);
+    });
+    precioInput.addEventListener('input', function() { calcularSubtotal(this); });
+
     filaCount++;
 }
 
@@ -157,13 +208,13 @@ function eliminarFila(id) {
 
 function calcularSubtotal(elemento) {
     const fila = elemento.closest('tr');
-    const cantidad = fila.querySelector('input[name*="[cantidad]"]').value || 0;
-    const precio = fila.querySelector('input[name*="[precio]"]').value || 0;
+    if (!fila) return;
+
+    const cantidad = parseFloat(fila.querySelector('.input-cantidad').value) || 0;
+    const precio = parseFloat(fila.querySelector('.input-precio').value) || 0;
     const subtotal = cantidad * precio;
-    
-    const subtotalCell = fila.querySelector('.subtotal-cell');
-    subtotalCell.textContent = `RD$ ${subtotal.toFixed(2)}`;
-    
+
+    fila.querySelector('.subtotal-cell').textContent = `RD$ ${subtotal.toFixed(2)}`;
     calcularTotal();
 }
 
@@ -174,13 +225,20 @@ function calcularTotal() {
         const valor = parseFloat(cell.textContent.replace('RD$ ', ''));
         if (!isNaN(valor)) total += valor;
     });
-    
     document.getElementById('totalSalida').textContent = `RD$ ${total.toFixed(2)}`;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    agregarFila();
+    if (articulos.length > 0) {
+        agregarFila();
+    } else {
+        alert('No hay artículos disponibles. Por favor, crea artículos primero en el módulo de Inventario.');
+    }
 });
+
+window.agregarFila = agregarFila;
+window.eliminarFila = eliminarFila;
+window.calcularSubtotal = calcularSubtotal;
+window.calcularTotal = calcularTotal;
 </script>
-@endpush
 @endsection

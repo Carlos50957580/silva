@@ -51,6 +51,11 @@ class EntradaController extends Controller
         $proveedores = Proveedor::where('activo', true)->get();
         $articulos = Articulo::where('activo', true)->get();
         
+        // ============================================
+        // DEBUG: Verificar qué datos llegan
+        // ===========================================
+        // ============================================
+        
         // Generar código automático
         $ultimo = Entrada::latest('id')->first();
         $numero = $ultimo ? intval(substr($ultimo->codigo, -4)) + 1 : 1;

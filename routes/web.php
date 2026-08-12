@@ -28,10 +28,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/inventario/{id}/movimientos', [InventarioController::class, 'registrarMovimiento'])->name('inventario.registrar-movimiento');
     Route::patch('/inventario/alertas/{id}/resolver', [InventarioController::class, 'resolverAlerta'])->name('inventario.resolver-alerta');
 
-    // ============================================
-    // PROVEEDORES
-    // ============================================
-    Route::resource('proveedores', ProveedorController::class);
+// routes/web.php
+
+// ============================================
+// PROVEEDORES
+// ============================================
+Route::resource('proveedores', ProveedorController::class)
+    ->parameters(['proveedores' => 'proveedor']);
 
     // Entradas
 Route::prefix('entradas')->name('entradas.')->group(function () {
