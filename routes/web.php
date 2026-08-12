@@ -61,17 +61,21 @@ Route::prefix('salidas')->name('salidas.')->group(function () {
 });
 
     // ============================================
-    // SUCURSALES
-    // ============================================
-    Route::resource('sucursales', SucursalController::class);
+// SUCURSALES
+// ============================================
 
+Route::resource('sucursales', SucursalController::class)
+    ->parameters([
+        'sucursales' => 'sucursal',
+    ]);
     // ============================================
     // REPORTES
     // ============================================
-    Route::get('reportes', [ReporteController::class, 'index'])->name('reportes.index');
-    Route::get('reportes/stock', [ReporteController::class, 'stock'])->name('reportes.stock');
-    Route::get('reportes/movimientos', [ReporteController::class, 'movimientos'])->name('reportes.movimientos');
-    Route::get('reportes/exportar-pdf', [ReporteController::class, 'exportarPdf'])->name('reportes.exportar-pdf');
+    Route::get('/reportes', [ReporteController::class, 'index'])
+    ->name('reportes.index');
+
+Route::get('/reportes/exportar-pdf', [ReporteController::class, 'exportarPdf'])
+    ->name('reportes.exportar-pdf');
 });
 
 require __DIR__.'/auth.php';

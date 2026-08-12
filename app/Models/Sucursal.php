@@ -11,6 +11,10 @@ class Sucursal extends Model
 
     protected $table = 'sucursales';
 
+    protected $casts = [
+    'activo' => 'boolean',
+];
+
     protected $fillable = [
         'nombre',
         'codigo',
