@@ -764,8 +764,8 @@
 
                 <li>
 
-                    <a
-                        href="#"
+                   
+                       <a href="{{ route('configuracion.index') }}"
                         title="Configuración"
                         class="sidebar-link flex items-center px-4 py-3 text-gray-300 hover:text-white">
 

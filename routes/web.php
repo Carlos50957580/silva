@@ -1,6 +1,7 @@
 <?php
 // routes/web.php
 
+use App\Http\Controllers\AccountSettingsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EntradaController;
 use App\Http\Controllers\InventarioController;
@@ -76,6 +77,19 @@ Route::resource('sucursales', SucursalController::class)
 
 Route::get('/reportes/exportar-pdf', [ReporteController::class, 'exportarPdf'])
     ->name('reportes.exportar-pdf');
+});
+
+Route::middleware('auth')->group(function () {
+
+    Route::get('/configuracion', [AccountSettingsController::class, 'index'])
+        ->name('configuracion.index');
+
+    Route::put('/configuracion/perfil', [AccountSettingsController::class, 'updateProfile'])
+        ->name('configuracion.perfil.update');
+
+    Route::put('/configuracion/password', [AccountSettingsController::class, 'updatePassword'])
+        ->name('configuracion.password.update');
+
 });
 
 require __DIR__.'/auth.php';
