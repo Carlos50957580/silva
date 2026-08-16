@@ -454,30 +454,81 @@
 
 
                 <!-- =================================================
-                     INVENTARIO
-                ================================================== -->
+     INVENTARIO CON SUBMENÚ
+================================================== -->
 
-                <li>
+<li class="has-submenu">
 
-                    <a
-                        href="{{ route('inventario.index') }}"
-                        title="Inventario"
-                        class="sidebar-link flex items-center px-4 py-3 text-gray-300 hover:text-white
-                        {{ request()->routeIs('inventario.*') ? 'active' : '' }}">
+    <div
+        title="Inventario"
+        class="submenu-toggle sidebar-link flex items-center px-4 py-3 text-gray-300 hover:text-white
+        {{ request()->routeIs('inventario.*') || request()->routeIs('categorias.*') ? 'active open' : '' }}"
+        onclick="toggleSubmenu(this)">
 
-                        <i class="fas fa-box mr-3"></i>
+        <i class="fas fa-box mr-3"></i>
 
-                        <span class="sidebar-text">
-                            Inventario
-                        </span>
+        <span class="flex-1 sidebar-text">
+            Inventario
+        </span>
 
-                        <span class="sidebar-badge ml-auto bg-blue-600 text-white text-xs px-2 py-1 rounded-full">
-                            {{ \App\Models\Articulo::count() }}
-                        </span>
+        <i class="fas fa-chevron-down text-xs"></i>
 
-                    </a>
+    </div>
 
-                </li>
+
+    <ul
+        class="submenu
+        {{ request()->routeIs('inventario.*') || request()->routeIs('categorias.*') ? 'open' : '' }}">
+
+        <!-- ARTÍCULOS -->
+        <li>
+
+            <a
+                href="{{ route('inventario.index') }}"
+                title="Artículos"
+                class="sidebar-link submenu-link flex items-center px-4 py-2 text-gray-300 hover:text-white
+                {{ request()->routeIs('inventario.*') ? 'active' : '' }}">
+
+                <i class="fas fa-box mr-3 text-blue-400"></i>
+
+                <span class="sidebar-text">
+                    Artículos
+                </span>
+
+                <span class="sidebar-badge ml-auto bg-blue-600 text-white text-xs px-2 py-1 rounded-full">
+                    {{ \App\Models\Articulo::count() }}
+                </span>
+
+            </a>
+
+        </li>
+
+        <!-- CATEGORÍAS -->
+        <li>
+
+            <a
+                href="{{ route('categorias.index') }}"
+                title="Categorías"
+                class="sidebar-link submenu-link flex items-center px-4 py-2 text-gray-300 hover:text-white
+                {{ request()->routeIs('categorias.*') ? 'active' : '' }}">
+
+                <i class="fas fa-tags mr-3 text-purple-400"></i>
+
+                <span class="sidebar-text">
+                    Categorías
+                </span>
+
+                <span class="sidebar-badge ml-auto bg-purple-600 text-white text-xs px-2 py-1 rounded-full">
+                    {{ \App\Models\Categoria::count() }}
+                </span>
+
+            </a>
+
+        </li>
+
+    </ul>
+
+</li>
 
 
                 <!-- =================================================

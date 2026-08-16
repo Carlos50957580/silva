@@ -2,6 +2,7 @@
 // routes/web.php
 
 use App\Http\Controllers\AccountSettingsController;
+use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EntradaController;
 use App\Http\Controllers\InventarioController;
@@ -29,7 +30,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/inventario/{id}/movimientos', [InventarioController::class, 'registrarMovimiento'])->name('inventario.registrar-movimiento');
     Route::patch('/inventario/alertas/{id}/resolver', [InventarioController::class, 'resolverAlerta'])->name('inventario.resolver-alerta');
 
-// routes/web.php
 
 // ============================================
 // PROVEEDORES
@@ -79,6 +79,11 @@ Route::get('/reportes/exportar-pdf', [ReporteController::class, 'exportarPdf'])
     ->name('reportes.exportar-pdf');
 });
 
+
+
+// ============================================
+// CONFIGURACION - Rutas manuales
+// ============================================
 Route::middleware('auth')->group(function () {
 
     Route::get('/configuracion', [AccountSettingsController::class, 'index'])
@@ -91,5 +96,16 @@ Route::middleware('auth')->group(function () {
         ->name('configuracion.password.update');
 
 });
+
+// ============================================
+// CATEGORIAS - Rutas manuales
+// ============================================
+Route::get('/categorias', [CategoriaController::class, 'index'])->name('categorias.index');
+Route::get('/categorias/create', [CategoriaController::class, 'create'])->name('categorias.create');
+Route::post('/categorias', [CategoriaController::class, 'store'])->name('categorias.store');
+Route::get('/categorias/{id}/edit', [CategoriaController::class, 'edit'])->name('categorias.edit');
+Route::put('/categorias/{id}', [CategoriaController::class, 'update'])->name('categorias.update');
+Route::delete('/categorias/{id}', [CategoriaController::class, 'destroy'])->name('categorias.destroy');
+Route::patch('/categorias/{id}/toggle', [CategoriaController::class, 'toggleActivo'])->name('categorias.toggle');
 
 require __DIR__.'/auth.php';
