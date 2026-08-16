@@ -95,9 +95,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/configuracion/password', [AccountSettingsController::class, 'updatePassword'])
         ->name('configuracion.password.update');
 
-});
-
-// ============================================
+    // ============================================
 // CATEGORIAS - Rutas manuales
 // ============================================
 Route::get('/categorias', [CategoriaController::class, 'index'])->name('categorias.index');
@@ -107,5 +105,9 @@ Route::get('/categorias/{id}/edit', [CategoriaController::class, 'edit'])->name(
 Route::put('/categorias/{id}', [CategoriaController::class, 'update'])->name('categorias.update');
 Route::delete('/categorias/{id}', [CategoriaController::class, 'destroy'])->name('categorias.destroy');
 Route::patch('/categorias/{id}/toggle', [CategoriaController::class, 'toggleActivo'])->name('categorias.toggle');
+
+});
+
+
 
 require __DIR__.'/auth.php';
