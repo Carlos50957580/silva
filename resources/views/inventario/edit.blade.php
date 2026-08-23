@@ -10,7 +10,6 @@
             <div class="flex items-center justify-between">
                 <h2 class="text-xl font-semibold">Editar Artículo</h2>
                 <div class="flex items-center space-x-2">
-                    <!-- CORREGIDO: Usando el ID correctamente -->
                     <a href="{{ route('inventario.movimientos', ['id' => $articulo->id]) }}" 
                        class="text-blue-600 hover:text-blue-800">
                         <i class="fas fa-history mr-1"></i>Ver Movimientos
@@ -21,12 +20,13 @@
                 </div>
             </div>
         </div>
-        
+
         <form method="POST" action="{{ route('inventario.update', ['id' => $articulo->id]) }}" class="p-6">
             @csrf
             @method('PUT')
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Código SKU (solo lectura) -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Código SKU</label>
                     <div class="bg-gray-100 p-2 rounded-lg text-gray-600 font-mono">
@@ -34,6 +34,7 @@
                     </div>
                 </div>
 
+                <!-- Nombre -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Nombre *</label>
                     <input type="text" name="nombre" value="{{ old('nombre', $articulo->nombre) }}" 
@@ -43,6 +44,7 @@
                     @enderror
                 </div>
 
+                <!-- Categoría -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Categoría *</label>
                     <select name="categoria_id" class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 @error('categoria_id') border-red-500 @enderror">
@@ -58,15 +60,23 @@
                     @enderror
                 </div>
 
+                <!-- Unidad de Medida - SELECT -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Unidad de Medida *</label>
-                    <input type="text" name="unidad_medida" value="{{ old('unidad_medida', $articulo->unidad_medida) }}" 
-                           class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 @error('unidad_medida') border-red-500 @enderror">
+                    <select name="unidad_medida" class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 @error('unidad_medida') border-red-500 @enderror">
+                        <option value="">Seleccione una unidad</option>
+                        @foreach($unidadesMedida as $unidad)
+                        <option value="{{ $unidad }}" {{ old('unidad_medida', $articulo->unidad_medida) == $unidad ? 'selected' : '' }}>
+                            {{ $unidad }}
+                        </option>
+                        @endforeach
+                    </select>
                     @error('unidad_medida')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
+                <!-- Stock Actual -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Stock Actual *</label>
                     <input type="number" name="stock_actual" value="{{ old('stock_actual', $articulo->stock_actual) }}" min="0"
@@ -80,6 +90,7 @@
                     </p>
                 </div>
 
+                <!-- Mínimo Requerido -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Mínimo Requerido *</label>
                     <input type="number" name="minimo_requerido" value="{{ old('minimo_requerido', $articulo->minimo_requerido) }}" min="0"
@@ -89,13 +100,23 @@
                     @enderror
                 </div>
 
+                <!-- Ubicación - SELECT -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Ubicación</label>
-                    <input type="text" name="ubicacion" value="{{ old('ubicacion', $articulo->ubicacion) }}" 
-                           placeholder="Ej: Almacén Principal"
-                           class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200">
+                    <select name="ubicacion" class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200">
+                        <option value="">Seleccione una ubicación</option>
+                        @foreach($ubicaciones as $ubicacion)
+                        <option value="{{ $ubicacion }}" {{ old('ubicacion', $articulo->ubicacion) == $ubicacion ? 'selected' : '' }}>
+                            {{ $ubicacion }}
+                        </option>
+                        @endforeach
+                    </select>
+                    @error('ubicacion')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
+                <!-- Precio Unitario -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Precio Unitario (RD$)</label>
                     <div class="relative">
@@ -106,6 +127,7 @@
                     </div>
                 </div>
 
+                <!-- Costo Unitario -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Costo Unitario (RD$)</label>
                     <div class="relative">
@@ -116,6 +138,7 @@
                     </div>
                 </div>
 
+                <!-- Activo -->
                 <div class="flex items-center">
                     <input type="checkbox" name="activo" id="activo" value="1" 
                            {{ old('activo', $articulo->activo) ? 'checked' : '' }}
@@ -124,20 +147,34 @@
                 </div>
             </div>
 
+            <!-- Descripción -->
             <div class="mt-6">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
                 <textarea name="descripcion" rows="3" 
                           class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200">{{ old('descripcion', $articulo->descripcion) }}</textarea>
             </div>
 
+            <!-- Estado Actual -->
             <div class="mt-4 p-4 bg-gray-50 rounded-lg">
                 <p class="text-sm text-gray-600">Estado actual del artículo:</p>
                 <div class="flex items-center space-x-4 mt-1">
-                    {!! $articulo->estado_badge !!}
+                    @php
+                        $estados = [
+                            'disponible' => ['bg-green-100', 'text-green-800', 'Disponible'],
+                            'stock_bajo' => ['bg-yellow-100', 'text-yellow-800', 'Stock Bajo'],
+                            'agotado' => ['bg-red-100', 'text-red-800', 'Agotado']
+                        ];
+                        $estadoActual = $articulo->stock_actual <= 0 ? 'agotado' : ($articulo->stock_actual <= $articulo->minimo_requerido ? 'stock_bajo' : 'disponible');
+                        $estado = $estados[$estadoActual] ?? ['bg-gray-100', 'text-gray-800', 'Desconocido'];
+                    @endphp
+                    <span class="px-3 py-1 rounded-full text-xs font-medium {{ $estado[0] }} {{ $estado[1] }}">
+                        {{ $estado[2] }}
+                    </span>
                     <span class="text-sm text-gray-500">Stock: {{ $articulo->stock_actual }} {{ $articulo->unidad_medida }}</span>
                 </div>
             </div>
 
+            <!-- Botones -->
             <div class="mt-6 flex justify-end space-x-3">
                 <a href="{{ route('inventario.index') }}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
                     Cancelar

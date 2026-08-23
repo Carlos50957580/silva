@@ -95,7 +95,7 @@
         @csrf
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Tipo *</label>
-            <select name="tipo" class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200" required>
+            <select name="tipo" id="tipoMovimiento" class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200" required>
                 <option value="entrada">Entrada</option>
                 <option value="salida">Salida</option>
                 <option value="ajuste">Ajuste</option>
@@ -111,8 +111,43 @@
         </div>
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Motivo *</label>
-            <input type="text" name="motivo" placeholder="Ej: Compra, Venta, Ajuste..." 
-                   class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200" required>
+            <select name="motivo" id="motivoMovimiento" class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200" required>
+                <!-- Opciones de Entrada -->
+                <optgroup label="Entrada" id="motivosEntrada">
+                    <option value="Compra a proveedor">Compra a proveedor</option>
+                    <option value="Devolución de cliente">Devolución de cliente</option>
+                    <option value="Traslado desde otra sucursal">Traslado desde otra sucursal</option>
+                    <option value="Donación recibida">Donación recibida</option>
+                    <option value="Producción interna">Producción interna</option>
+                    <option value="Reingreso de inventario">Reingreso de inventario</option>
+                    <option value="Ajuste por inventario físico">Ajuste por inventario físico</option>
+                    <option value="Compra por pedido especial">Compra por pedido especial</option>
+                </optgroup>
+                <!-- Opciones de Salida -->
+                <optgroup label="Salida" id="motivosSalida">
+                    <option value="Venta a cliente">Venta a cliente</option>
+                    <option value="Devolución a proveedor">Devolución a proveedor</option>
+                    <option value="Traslado a otra sucursal">Traslado a otra sucursal</option>
+                    <option value="Consumo interno">Consumo interno</option>
+                    <option value="Muestra gratuita">Muestra gratuita</option>
+                    <option value="Donación realizada">Donación realizada</option>
+                    <option value="Baja por deterioro">Baja por deterioro</option>
+                    <option value="Baja por vencimiento">Baja por vencimiento</option>
+                    <option value="Robo o pérdida">Robo o pérdida</option>
+                    <option value="Ajuste por inventario físico">Ajuste por inventario físico</option>
+                    <option value="Venta por pedido especial">Venta por pedido especial</option>
+                </optgroup>
+                <!-- Opciones de Ajuste -->
+                <optgroup label="Ajuste" id="motivosAjuste">
+                    <option value="Ajuste por inventario físico">Ajuste por inventario físico</option>
+                    <option value="Corrección de error">Corrección de error</option>
+                    <option value="Recálculo de stock">Recálculo de stock</option>
+                    <option value="Redondeo de inventario">Redondeo de inventario</option>
+                    <option value="Ajuste por merma">Ajuste por merma</option>
+                    <option value="Ajuste por sobrante">Ajuste por sobrante</option>
+                    <option value="Cambio de unidad de medida">Cambio de unidad de medida</option>
+                </optgroup>
+            </select>
         </div>
         <div class="md:col-span-4">
             <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
@@ -182,4 +217,45 @@
         {{ $movimientos->links() }}
     </div>
 </div>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tipoSelect = document.getElementById('tipoMovimiento');
+        const motivoSelect = document.getElementById('motivoMovimiento');
+
+        function actualizarMotivos() {
+            const tipo = tipoSelect.value;
+            const opciones = motivoSelect.querySelectorAll('optgroup');
+            
+            // Ocultar todos los grupos
+            opciones.forEach(function(group) {
+                group.style.display = 'none';
+            });
+
+            // Mostrar el grupo correspondiente al tipo seleccionado
+            if (tipo === 'entrada') {
+                document.getElementById('motivosEntrada').style.display = 'block';
+                // Seleccionar la primera opción del grupo
+                const primeraOpcion = document.getElementById('motivosEntrada').querySelector('option');
+                if (primeraOpcion) primeraOpcion.selected = true;
+            } else if (tipo === 'salida') {
+                document.getElementById('motivosSalida').style.display = 'block';
+                const primeraOpcion = document.getElementById('motivosSalida').querySelector('option');
+                if (primeraOpcion) primeraOpcion.selected = true;
+            } else if (tipo === 'ajuste') {
+                document.getElementById('motivosAjuste').style.display = 'block';
+                const primeraOpcion = document.getElementById('motivosAjuste').querySelector('option');
+                if (primeraOpcion) primeraOpcion.selected = true;
+            }
+        }
+
+        // Ejecutar al cambiar el tipo
+        tipoSelect.addEventListener('change', actualizarMotivos);
+
+        // Ejecutar al cargar la página
+        actualizarMotivos();
+    });
+</script>
+@endpush
 @endsection

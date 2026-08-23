@@ -207,18 +207,90 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
 
-                <!-- Destino -->
+                <!-- Destino - AHORA CON SELECT Y INPUT PERSONALIZADO -->
                 <div>
 
                     <label class="block text-sm font-medium text-gray-700 mb-1">
-                        Destino
+                        Destino <span class="text-red-500">*</span>
                     </label>
 
-                    <input type="text"
+                    <select name="destino_select"
+                            id="destino_select"
+                            class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200">
+
+                        <option value="">
+                            Seleccione un destino
+                        </option>
+
+                        <option value="Cliente Final">
+                            Cliente Final
+                        </option>
+
+                        <option value="Cliente Mayorista">
+                            Cliente Mayorista
+                        </option>
+
+                        <option value="Otra Sucursal">
+                            Otra Sucursal
+                        </option>
+
+                        <option value="Departamento de Ventas">
+                            Departamento de Ventas
+                        </option>
+
+                        <option value="Departamento de Producción">
+                            Departamento de Producción
+                        </option>
+
+                        <option value="Área de Mantenimiento">
+                            Área de Mantenimiento
+                        </option>
+
+                        <option value="Almacén Secundario">
+                            Almacén Secundario
+                        </option>
+
+                        <option value="Proveedor">
+                            Proveedor (Devolución)
+                        </option>
+
+                        <option value="Baja por Deterioro">
+                            Baja por Deterioro
+                        </option>
+
+                        <option value="Baja por Vencimiento">
+                            Baja por Vencimiento
+                        </option>
+
+                        <option value="Donación">
+                            Donación
+                        </option>
+
+                        <option value="Consumo Interno">
+                            Consumo Interno
+                        </option>
+
+                        <option value="Muestra Gratuita">
+                            Muestra Gratuita
+                        </option>
+
+                        <option value="OTRO">
+                            Otro (Especificar)
+                        </option>
+
+                    </select>
+
+                    <div id="destino_personalizado_container" class="mt-2 hidden">
+                        <input type="text"
+                               name="destino_personalizado"
+                               id="destino_personalizado"
+                               placeholder="Especifica el destino..."
+                               class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200">
+                    </div>
+
+                    <input type="hidden"
                            name="destino"
-                           value="{{ old('destino') }}"
-                           placeholder="Ej: Cliente, Departamento, Sucursal..."
-                           class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200">
+                           id="destino_final">
 
                     @error('destino')
                         <p class="text-red-500 text-xs mt-1">
@@ -423,6 +495,79 @@
 let filaCount = 0;
 
 const articulos = window.articulos || [];
+
+
+// =====================================================
+// MANEJO DE DESTINO PERSONALIZADO
+// =====================================================
+
+document.addEventListener('DOMContentLoaded', function() {
+
+    const destinoSelect =
+        document.getElementById('destino_select');
+
+    const destinoPersonalizado =
+        document.getElementById('destino_personalizado');
+
+    const destinoContainer =
+        document.getElementById('destino_personalizado_container');
+
+    const destinoFinal =
+        document.getElementById('destino_final');
+
+
+    function actualizarDestino() {
+
+        const valor =
+            destinoSelect.value;
+
+
+        if (valor === 'OTRO') {
+
+            // Mostrar input personalizado
+            destinoContainer.classList.remove('hidden');
+
+            destinoPersonalizado.focus();
+
+            // Usar el valor personalizado
+            destinoFinal.value =
+                destinoPersonalizado.value || '';
+
+        } else {
+
+            // Ocultar input personalizado
+            destinoContainer.classList.add('hidden');
+
+            // Usar el valor seleccionado
+            destinoFinal.value = valor;
+
+        }
+
+    }
+
+
+    // Evento al cambiar el select
+    destinoSelect.addEventListener(
+        'change',
+        actualizarDestino
+    );
+
+
+    // Evento al escribir en el input personalizado
+    destinoPersonalizado.addEventListener(
+        'input',
+        function() {
+
+            destinoFinal.value = this.value;
+
+        }
+    );
+
+
+    // Inicializar
+    actualizarDestino();
+
+});
 
 
 // =====================================================
@@ -870,6 +1015,27 @@ document.getElementById('formSalida')
 
             document
                 .getElementById('sucursal_id')
+                .focus();
+
+            return;
+
+        }
+
+
+        const destinoFinal =
+            document.getElementById('destino_final').value;
+
+
+        if (!destinoFinal) {
+
+            event.preventDefault();
+
+            alert(
+                'Debe especificar un destino para la salida.'
+            );
+
+            document
+                .getElementById('destino_select')
                 .focus();
 
             return;

@@ -37,8 +37,15 @@ class InventarioController extends Controller
             }
         }
 
+        if ($request->filled('ubicacion')) {
+            $query->where('ubicacion', $request->ubicacion);
+        }
+
         $articulos = $query->paginate(15)->withQueryString();
         $categorias = Categoria::where('activo', true)->get();
+        
+        // Obtener ubicaciones únicas de los artículos para el filtro
+        $ubicaciones = Articulo::distinct()->pluck('ubicacion')->filter()->values();
 
         $stats = [
             'total' => Articulo::count(),
@@ -47,7 +54,7 @@ class InventarioController extends Controller
             'disponibles' => Articulo::whereRaw('stock_actual > minimo_requerido')->count(),
         ];
 
-        return view('inventario.index', compact('articulos', 'categorias', 'stats'));
+        return view('inventario.index', compact('articulos', 'categorias', 'stats', 'ubicaciones'));
     }
 
     public function create()
@@ -57,7 +64,11 @@ class InventarioController extends Controller
         $numero = $ultimo ? intval(substr($ultimo->codigo_sku, -3)) + 1 : 1;
         $codigoSku = 'RD-INV-' . str_pad($numero, 3, '0', STR_PAD_LEFT);
 
-        return view('inventario.create', compact('categorias', 'codigoSku'));
+        // Obtener opciones de configuración
+        $unidadesMedida = config('inventario.unidades_medida', []);
+        $ubicaciones = config('inventario.ubicaciones', []);
+
+        return view('inventario.create', compact('categorias', 'codigoSku', 'unidadesMedida', 'ubicaciones'));
     }
 
     public function store(Request $request)
@@ -67,9 +78,9 @@ class InventarioController extends Controller
             'nombre' => 'required',
             'categoria_id' => 'required|exists:categorias,id',
             'stock_actual' => 'required|integer|min:0',
-            'unidad_medida' => 'required',
+            'unidad_medida' => 'required|in:' . implode(',', config('inventario.unidades_medida', [])),
             'minimo_requerido' => 'required|integer|min:0',
-            'ubicacion' => 'nullable',
+            'ubicacion' => 'nullable|in:' . implode(',', config('inventario.ubicaciones', [])),
             'precio_unitario' => 'nullable|numeric|min:0',
             'costo_unitario' => 'nullable|numeric|min:0',
             'descripcion' => 'nullable',
@@ -101,7 +112,7 @@ class InventarioController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Error al crear el artículo.');
+            return back()->with('error', 'Error al crear el artículo: ' . $e->getMessage());
         }
     }
 
@@ -110,7 +121,11 @@ class InventarioController extends Controller
         $articulo = Articulo::with('categoria')->findOrFail($id);
         $categorias = Categoria::where('activo', true)->get();
         
-        return view('inventario.edit', compact('articulo', 'categorias'));
+        // Obtener opciones de configuración
+        $unidadesMedida = config('inventario.unidades_medida', []);
+        $ubicaciones = config('inventario.ubicaciones', []);
+
+        return view('inventario.edit', compact('articulo', 'categorias', 'unidadesMedida', 'ubicaciones'));
     }
 
     public function update(Request $request, $id)
@@ -121,9 +136,9 @@ class InventarioController extends Controller
             'nombre' => 'required',
             'categoria_id' => 'required|exists:categorias,id',
             'stock_actual' => 'required|integer|min:0',
-            'unidad_medida' => 'required',
+            'unidad_medida' => 'required|in:' . implode(',', config('inventario.unidades_medida', [])),
             'minimo_requerido' => 'required|integer|min:0',
-            'ubicacion' => 'nullable',
+            'ubicacion' => 'nullable|in:' . implode(',', config('inventario.ubicaciones', [])),
             'precio_unitario' => 'nullable|numeric|min:0',
             'costo_unitario' => 'nullable|numeric|min:0',
             'descripcion' => 'nullable',
@@ -140,7 +155,7 @@ class InventarioController extends Controller
                     'tipo' => 'ajuste',
                     'cantidad' => abs($diferencia),
                     'precio_unitario' => $validated['costo_unitario'] ?: $validated['precio_unitario'],
-                    'motivo' => 'Ajuste de inventario: ' . ($diferencia > 0 ? 'incremento' : 'decremento'),
+                    'motivo' => 'Ajuste de inventario: ' . ($diferencia > 0 ? 'incremento' : 'decremento') . ' de ' . abs($diferencia) . ' unidades',
                     'usuario_id' => auth()->id(),
                 ]);
             }
@@ -157,7 +172,7 @@ class InventarioController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Error al actualizar el artículo.');
+            return back()->with('error', 'Error al actualizar el artículo: ' . $e->getMessage());
         }
     }
 
@@ -250,7 +265,7 @@ class InventarioController extends Controller
 
             DB::commit();
 
-            return redirect()->route('inventario.movimientos', ['articulo' => $articulo->id])
+            return redirect()->route('inventario.movimientos', ['id' => $articulo->id])
                 ->with('success', 'Movimiento registrado exitosamente.');
 
         } catch (\Exception $e) {

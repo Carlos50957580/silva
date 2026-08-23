@@ -746,58 +746,7 @@
                 </li>
 
 
-                <!-- ENTRADAS PENDIENTES -->
-
-                <li>
-
-                    <a
-                        href="{{ route('entradas.index', ['estado' => 'pendiente']) }}"
-                        title="Entradas Pendientes"
-                        class="sidebar-link flex items-center px-4 py-3 text-gray-300 hover:text-white">
-
-                        <i class="fas fa-clock mr-3 text-yellow-500"></i>
-
-                        <span class="sidebar-text">
-                            Entradas Pendientes
-                        </span>
-
-                        <span class="sidebar-badge ml-auto bg-yellow-500 text-white text-xs px-2 py-1 rounded-full">
-
-                            {{ \App\Models\Entrada::where('estado', 'pendiente')->count() }}
-
-                        </span>
-
-                    </a>
-
-                </li>
-
-
-                <!-- SALIDAS PENDIENTES -->
-
-                <li>
-
-                    <a
-                        href="{{ route('salidas.index', ['estado' => 'pendiente']) }}"
-                        title="Salidas Pendientes"
-                        class="sidebar-link flex items-center px-4 py-3 text-gray-300 hover:text-white">
-
-                        <i class="fas fa-clock mr-3 text-yellow-500"></i>
-
-                        <span class="sidebar-text">
-                            Salidas Pendientes
-                        </span>
-
-                        <span class="sidebar-badge ml-auto bg-yellow-500 text-white text-xs px-2 py-1 rounded-full">
-
-                            {{ \App\Models\Salida::where('estado', 'pendiente')->count() }}
-
-                        </span>
-
-                    </a>
-
-                </li>
-
-            </ul>
+            
 
 
             <!-- =================================================

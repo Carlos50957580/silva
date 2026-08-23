@@ -55,12 +55,17 @@
                     @enderror
                 </div>
 
-                <!-- Unidad de Medida -->
+                <!-- Unidad de Medida - SELECT -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Unidad de Medida *</label>
-                    <input type="text" name="unidad_medida" value="{{ old('unidad_medida') }}" 
-                           placeholder="Ej: Unidades, Rollos, Cajas, Sistemas"
-                           class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 @error('unidad_medida') border-red-500 @enderror">
+                    <select name="unidad_medida" class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 @error('unidad_medida') border-red-500 @enderror">
+                        <option value="">Seleccione una unidad</option>
+                        @foreach($unidadesMedida as $unidad)
+                        <option value="{{ $unidad }}" {{ old('unidad_medida') == $unidad ? 'selected' : '' }}>
+                            {{ $unidad }}
+                        </option>
+                        @endforeach
+                    </select>
                     @error('unidad_medida')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror
@@ -86,12 +91,20 @@
                     @enderror
                 </div>
 
-                <!-- Ubicación -->
+                <!-- Ubicación - SELECT -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Ubicación</label>
-                    <input type="text" name="ubicacion" value="{{ old('ubicacion') }}" 
-                           placeholder="Ej: Almacén Principal, Oficina..."
-                           class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200">
+                    <select name="ubicacion" class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200">
+                        <option value="">Seleccione una ubicación</option>
+                        @foreach($ubicaciones as $ubicacion)
+                        <option value="{{ $ubicacion }}" {{ old('ubicacion') == $ubicacion ? 'selected' : '' }}>
+                            {{ $ubicacion }}
+                        </option>
+                        @endforeach
+                    </select>
+                    @error('ubicacion')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <!-- Precio Unitario -->
