@@ -10,6 +10,7 @@ use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\SucursalController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\SalidaController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->group(function () {
@@ -105,6 +106,25 @@ Route::get('/categorias/{id}/edit', [CategoriaController::class, 'edit'])->name(
 Route::put('/categorias/{id}', [CategoriaController::class, 'update'])->name('categorias.update');
 Route::delete('/categorias/{id}', [CategoriaController::class, 'destroy'])->name('categorias.destroy');
 Route::patch('/categorias/{id}/toggle', [CategoriaController::class, 'toggleActivo'])->name('categorias.toggle');
+
+
+// routes/web.php - Agregar dentro del grupo auth
+
+// ============================================
+// USUARIOS - Solo para SuperAdmin
+// ============================================
+Route::prefix('usuarios')
+    ->name('usuarios.')
+    ->middleware(['superadmin'])
+    ->group(function () {
+        Route::get('/', [UserController::class, 'index'])->name('index');
+        Route::get('/create', [UserController::class, 'create'])->name('create');
+        Route::post('/', [UserController::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [UserController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [UserController::class, 'update'])->name('update');
+        Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
+        Route::patch('/{id}/toggle-superadmin', [UserController::class, 'toggleSuperAdmin'])->name('toggle-superadmin');
+    });
 
 });
 

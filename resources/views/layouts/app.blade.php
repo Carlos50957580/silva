@@ -801,6 +801,45 @@
 
 
             <!-- =================================================
+     USUARIOS - Solo visible para SuperAdmin
+================================================== -->
+
+@if(auth()->user()->isSuperAdmin())
+
+    <p class="menu-section-title text-xs text-gray-500 uppercase tracking-wider mt-6 mb-3 sidebar-text">
+        Administración
+    </p>
+
+    <ul class="space-y-1">
+
+        <li>
+
+            <a
+                href="{{ route('usuarios.index') }}"
+                title="Usuarios"
+                class="sidebar-link flex items-center px-4 py-3 text-gray-300 hover:text-white
+                {{ request()->routeIs('usuarios.*') ? 'active' : '' }}">
+
+                <i class="fas fa-users mr-3"></i>
+
+                <span class="sidebar-text">
+                    Usuarios
+                </span>
+
+                <span class="sidebar-badge ml-auto bg-blue-600 text-white text-xs px-2 py-1 rounded-full">
+                    {{ \App\Models\User::count() }}
+                </span>
+
+            </a>
+
+        </li>
+
+    </ul>
+
+@endif
+
+
+            <!-- =================================================
                  CONFIGURACIÓN
             ================================================== -->
 
@@ -829,6 +868,8 @@
                     </a>
 
                 </li>
+
+                
 
 
                 <!-- LOGOUT -->
