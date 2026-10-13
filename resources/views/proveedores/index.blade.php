@@ -58,42 +58,24 @@
 
     <div class="overflow-x-auto">
 
-        <table class="w-full">
+        {{--
+            - table-auto + padding compacto (px-4 py-3).
+            - Solo "Nombre" es flexible (sin w-px): absorbe el espacio sobrante.
+            - El resto de columnas usan w-px + whitespace-nowrap y se ajustan a su contenido.
+        --}}
+        <table class="w-full table-auto">
 
             <thead class="bg-gray-50">
                 <tr>
 
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        #
-                    </th>
-
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Nombre
-                    </th>
-
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        RUC
-                    </th>
-
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Teléfono
-                    </th>
-
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Email
-                    </th>
-
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Contacto
-                    </th>
-
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Estado
-                    </th>
-
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Acciones
-                    </th>
+                    <th class="w-px px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">#</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                    <th class="w-px px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">RUC</th>
+                    <th class="w-px px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Teléfono</th>
+                    <th class="w-px px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Email</th>
+                    <th class="w-px px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Contacto</th>
+                    <th class="w-px px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Estado</th>
+                    <th class="w-px px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Acciones</th>
 
                 </tr>
             </thead>
@@ -106,60 +88,56 @@
                     <tr class="hover:bg-gray-50 transition duration-150">
 
                         {{-- Número --}}
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                             {{ ($proveedores->currentPage() - 1) * $proveedores->perPage() + $loop->iteration }}
                         </td>
 
 
-                        {{-- Nombre --}}
-                        <td class="px-6 py-4 whitespace-nowrap">
-
-                            <div class="text-sm font-medium text-gray-900">
+                        {{-- Nombre (columna flexible) --}}
+                        <td class="px-4 py-3 text-sm font-medium text-gray-900">
+                            <div class="truncate max-w-md" title="{{ $proveedor->nombre }}">
                                 {{ $proveedor->nombre }}
                             </div>
-
                         </td>
 
 
                         {{-- RUC --}}
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-600">
+                        <td class="px-4 py-3 whitespace-nowrap text-sm font-mono text-gray-600">
                             {{ $proveedor->ruc }}
                         </td>
 
 
                         {{-- Teléfono --}}
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                             {{ $proveedor->telefono ?? '-' }}
                         </td>
 
 
                         {{-- Email --}}
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                             {{ $proveedor->email ?? '-' }}
                         </td>
 
 
                         {{-- Contacto --}}
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                             {{ $proveedor->contacto ?? '-' }}
                         </td>
 
 
                         {{-- Estado --}}
-                        <td class="px-6 py-4 whitespace-nowrap">
+                        <td class="px-4 py-3 whitespace-nowrap">
 
                             @if($proveedor->activo)
 
                                 <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                                    <i class="fas fa-check-circle mr-1"></i>
-                                    Activo
+                                    <i class="fas fa-check-circle mr-1"></i>Activo
                                 </span>
 
                             @else
 
                                 <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
-                                    <i class="fas fa-times-circle mr-1"></i>
-                                    Inactivo
+                                    <i class="fas fa-times-circle mr-1"></i>Inactivo
                                 </span>
 
                             @endif
@@ -168,9 +146,9 @@
 
 
                         {{-- Acciones --}}
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
 
-                            <div class="flex items-center space-x-3">
+                            <div class="flex items-center justify-end space-x-3">
 
                                 {{-- Editar --}}
                                 <a
@@ -252,7 +230,7 @@
 
 
     {{-- Paginación --}}
-    <div class="px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between">
+    <div class="px-4 py-3 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between">
 
         <div class="text-sm text-gray-500 mb-2 sm:mb-0">
 
